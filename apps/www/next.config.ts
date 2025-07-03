@@ -21,14 +21,7 @@ let nextConfig: NextConfig = {
   poweredByHeader: false,
 
   async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: '/blog/:path*/:slug',
-          destination: '/blogDetail/:path*/:slug',
-        },
-      ],
-    };
+    return {};
   },
 };
 

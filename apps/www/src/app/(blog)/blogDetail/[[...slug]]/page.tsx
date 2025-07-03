@@ -76,7 +76,10 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
               <div>
                 {frontmatter.authors?.map((author) => (
                   <div key={author.name} className="flex items-center gap-4">
-                    <img src={author.avatar} className="w-10 h-10 rounded-full" />
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${author.avatar}`}
+                      className="w-10 h-10 rounded-full"
+                    />
                     <div className="flex flex-col">
                       <div className="text-sm font-semibold">{author.name}</div>
                       <div className="text-sm text-muted-foreground">{author.role}</div>
@@ -87,7 +90,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
 
               <div>
                 <img
-                  src={`https://mtxwzacie9ujiton.public.blob.vercel-storage.com/${frontmatter.coverImage}`}
+                  src={`${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${frontmatter.coverImage}`}
                   className="aspect-16/9 object-cover overflow-hidden rounded-xl"
                 />
               </div>

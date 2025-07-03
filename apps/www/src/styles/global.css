@@ -1,0 +1,63 @@
+@import 'tailwindcss' source(none);
+
+@import '@mdxify/ui/css/neutral.css';
+@import '@mdxify/ui/css/preset.css';
+
+@source "../app";
+@source "../components";
+
+:root {
+  --Header-Height: 64px;
+  --Head-Pannel-Height: 64px;
+}
+
+.list-container {
+  width: 100%;
+  /* transition: all 0.5s ease; */
+  margin: 0 auto;
+  display: flex;
+  max-width: 1200px;
+  flex-direction: row;
+  position: relative;
+  gap: 16px;
+}
+
+.list-container.active {
+  position: absolute;
+  max-width: 600px;
+  flex-direction: column;
+  padding: 8px;
+  background-color: rgb(5, 7, 10);
+  z-index: 2;
+  border: 1px solid;
+  border-radius: 8px;
+  border-color: var(-mui-palette-divider);
+}
+
+.list-container:not(.active) {
+  mask: radial-gradient(105% 97% at 0 0, #000 42.8579%, transparent 100%) add;
+}
+
+.list-container:not(.active) .list-item:nth-child(1) {
+  margin-top: 100px;
+}
+
+.list-container:not(.active) .list-item:nth-child(2) {
+  margin-top: 140px;
+}
+
+.list-container:not(.active) .list-item:nth-child(3) {
+  margin-top: 80px;
+}
+
+.list-item {
+  flex: 1;
+}
+
+/* .list-container[style*='position: absolute'] .list-item {
+  display: block;
+} */
+
+/* .list-container[style*='position: relative'] .list-item {
+  width: calc(33.33% - 20px);
+} */

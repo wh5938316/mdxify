@@ -1,0 +1,15 @@
+{
+  "extends": "@mdxify/typescript-config/react-library.json",
+  "include": [
+    "./src",
+  ],
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@ui/*": ["./src/*"]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "extends": "@mdxify/typescript-config/react-library.json",
+  "include": [
+    "@mdxify/theme/overrides.d.ts",
+    "./src",
+    "./__tests__",
+    "../theme/src/mui-pigment-css.d.ts",
+    "../theme/src/overrides.d.ts"
+  ],
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["./src/*"]
+    }
+  }
+}

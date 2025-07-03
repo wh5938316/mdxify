@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true
+  },
+  "include": ["./src/**/*"],
+  "exclude": []
+}

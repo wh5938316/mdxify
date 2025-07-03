@@ -1,0 +1,41 @@
+@import "./shiki.css";
+@import "./animations.css";
+
+@source '../dist/**/*.js';
+
+@plugin '../dist/typography/index.js';
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+  }
+
+  html {
+    /* height: 100%; */
+  }
+
+  body {
+    /* height: 100%;
+    overflow: auto; */
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  [data-rmiz-modal-overlay="visible"] {
+    background-color: var(--color-background);
+  }
+}
+
+@utility prose-no-margin {
+  & > :first-child {
+    margin-top: 0;
+  }
+
+  & > :last-child {
+    margin-bottom: 0;
+  }
+}

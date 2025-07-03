@@ -1,0 +1,20 @@
+{
+  "extends": "@mdxify/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "plugins": [{ "name": "next" }],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@search-studio/*": ["../../packages/search-studio/src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../../packages/theme/src/mui-pigment-css.d.ts",
+    "../../packages/theme/src/overrides.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

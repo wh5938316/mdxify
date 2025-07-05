@@ -14,12 +14,9 @@
         "^build"
       ],
       "env": [
-        "KB_PASSWORD",
-        "KB_SERVER",
-        "SENTRY_AUTH_TOKEN",
-        "NEXT_PUBLIC_SENTRY_DSN",
-        "NEXT_PUBLIC_KB_PASSWORD",
-        "NEXT_PUBLIC_SEARCH_SERVER"
+        "MDXIFY_API_URL",
+        "MDXIFY_ACCESS_TOKEN",
+        "NEXT_PUBLIC_CDN_ENDPOINT"
       ],
       "outputs": [
         ".next/**",

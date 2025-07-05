@@ -2,6 +2,8 @@ import ArticleCard, { ArticleCardHorizontal } from '@/components/articleCard';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/head';
 
+export const revalidate = 60;
+
 interface Article {
   id: string;
   title: string;
@@ -78,7 +80,7 @@ export default async function BlogPage() {
   const regularArticles = allArticles.filter(
     (article) => !pinnedArticle || article.id !== pinnedArticle.id,
   );
-  console.log(pinnedArticle, regularArticles);
+
   return (
     <>
       <Header />

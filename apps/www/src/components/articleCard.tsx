@@ -159,7 +159,7 @@ export function ArticleCardHorizontal(props: ArticleCardHorizontalProps) {
           {/* 底部：作者信息 */}
           <div className="flex items-center gap-4">
             <img
-              src={`${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${primaryAuthor.avatar}`}
+              src={primaryAuthor.avatar}
               alt={primaryAuthor.name}
               className="w-12 h-12 rounded-full object-cover"
             />

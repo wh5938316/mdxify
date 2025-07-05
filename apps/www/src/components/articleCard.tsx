@@ -202,7 +202,7 @@ export function ArticleCardHorizontal(props: ArticleCardHorizontalProps) {
 使用示例:
 垂直版本:
 <ArticleCard
-  render={<a href="/blog/how-claudes-memory-and-mcp-work" />}
+  render={<Link href="/blog/how-claudes-memory-and-mcp-work" />}
   className='col-span-1'
   coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
   title="Generate MCP servers from your docs"
@@ -216,7 +216,7 @@ export function ArticleCardHorizontal(props: ArticleCardHorizontalProps) {
 
 横向版本:
 <ArticleCardHorizontal
-  render={<a href="/blog/how-claudes-memory-and-mcp-work" />}
+  render={<Link href="/blog/how-claudes-memory-and-mcp-work" />}
   className='col-span-1'
   coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
   title="Generate MCP servers from your docs"

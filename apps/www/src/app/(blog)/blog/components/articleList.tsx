@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import ArticleCard, { ArticleCardHorizontal } from '@/components/articleCard';
 
 interface Article {
@@ -88,7 +90,7 @@ export const PinnedArticleSection = async () => {
   return (
     <div className="mb-16">
       <ArticleCardHorizontal
-        render={<a href={`/blog/${pinnedArticle.slug}`} />}
+        render={<Link href={`/blog/${pinnedArticle.slug}`} />}
         className="mb-8"
         coverImage={`${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${pinnedArticle.coverImage.s3Key}`}
         title={pinnedArticle.title}
@@ -128,7 +130,7 @@ export const AllArticlesSection = async () => {
       {regularArticles.map((article) => (
         <ArticleCard
           key={article.id}
-          render={<a href={`/blog/${article.slug}`} />}
+          render={<Link href={`/blog/${article.slug}`} />}
           coverImage={article.coverImage}
           title={article.title}
           description={article.description}

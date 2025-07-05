@@ -1,5 +1,6 @@
 import { compileMDX, parseFrontmatter } from '@fumadocs/mdx-remote';
 import { ArrowLeftIcon } from 'lucide-react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { getMDXComponents } from '@mdxify/mdx-components';
@@ -260,7 +261,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
                 {articleDetail.relatedArticles.articles.slice(0, 2).map((relatedArticle) => (
                   <ArticleCard
                     key={relatedArticle.id}
-                    render={<a href={`/blog/${relatedArticle.slug}`} />}
+                    render={<Link href={`/blog/${relatedArticle.slug}`} />}
                     className="col-span-1"
                     coverImage={
                       relatedArticle.coverImage.s3Key

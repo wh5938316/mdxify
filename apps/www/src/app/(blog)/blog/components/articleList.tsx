@@ -30,6 +30,8 @@ async function getPinnedArticles(): Promise<Article[]> {
         headers: {
           'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
         },
+        // cache: 'no-store',
+        next: { revalidate: 60 },
       },
     );
 
@@ -51,6 +53,8 @@ async function getAllArticles(): Promise<Article[]> {
       headers: {
         'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
       },
+      // cache: 'no-store',
+      next: { revalidate: 60 },
     });
 
     if (!response.ok) {
@@ -68,8 +72,6 @@ async function getAllArticles(): Promise<Article[]> {
 // 置顶文章组件
 export const PinnedArticleSection = async () => {
   const pinnedArticles = await getPinnedArticles();
-  console.log(123, `${process.env.MDXIFY_API_URL}/api/v1/categories/blog?isPinned=true`);
-  console.log(456, pinnedArticles);
   const pinnedArticle = pinnedArticles[0];
 
   if (pinnedArticle && pinnedArticle.authors) {

@@ -14,6 +14,7 @@ export interface Frontmatter {
   coverImage?: string;
   seoTitle?: string;
   seoDescription?: string;
+  publishedAt?: string;
   authors?: {
     name: string;
     slug: string;
@@ -133,17 +134,14 @@ export const revalidate = 3600;
 
 async function getArticleDetail(slug: string): Promise<ArticleDetail | null> {
   try {
-    const response = await fetch(
-      `${process.env.MDXIFY_API_URL}/api/v1/categories/blog/articles/${slug}`,
-      {
-        headers: {
-          'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
-        },
-        next: {
-          revalidate: 120,
-        },
+    const response = await fetch(`${process.env.MDXIFY_API_URL}/api/v1/categories/blog/${slug}`, {
+      headers: {
+        'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
       },
-    );
+      next: {
+        revalidate: 120,
+      },
+    });
 
     if (!response.ok) {
       return null;
@@ -205,7 +203,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
       day: 'numeric',
     });
   };
-
+  console.log(123, frontmatter);
   return (
     <>
       <Header />
@@ -224,8 +222,8 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
             <div className="not-prose flex flex-col gap-6">
               <div className="flex flex-col gap-3">
                 <div className="text-sm text-muted-foreground">
-                  {articleDetail ? formatDate(articleDetail.publishedAt) : 'Unknown date'} •{' '}
-                  {articleDetail?.readingTime || 1} min read
+                  {frontmatter.publishedAt ? formatDate(frontmatter.publishedAt) : 'Unknown date'}
+                  {articleDetail?.readingTime ? ` • ${articleDetail.readingTime} min read` : ''}
                 </div>
                 <h1 className="text-3xl font-bold">{frontmatter.title}</h1>
               </div>

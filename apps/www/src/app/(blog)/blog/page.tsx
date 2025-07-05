@@ -2,29 +2,109 @@ import ArticleCard, { ArticleCardHorizontal } from '@/components/articleCard';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/head';
 
-export default function BlogPage() {
+interface Article {
+  id: string;
+  title: string;
+  description: string;
+  coverImage: {
+    s3Key: string;
+  };
+  authors: {
+    name: string;
+    avatar: string;
+    jobTitle?: string;
+  }[];
+  publishedAt: string;
+  readingTime?: string;
+  slug: string;
+  isPinned?: boolean;
+  metadata: {
+    fieldName: string;
+    value: string;
+  }[];
+}
+
+async function getPinnedArticles(): Promise<Article[]> {
+  try {
+    const response = await fetch(
+      `${process.env.MDXIFY_API_URL}/api/v1/categories/blog?isPinned=true`,
+      {
+        headers: {
+          'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch pinned articles: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching pinned articles:', error);
+    return [];
+  }
+}
+
+async function getAllArticles(): Promise<Article[]> {
+  try {
+    const response = await fetch(`${process.env.MDXIFY_API_URL}/api/v1/categories/blog`, {
+      headers: {
+        'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch articles: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+    return [];
+  }
+}
+
+export default async function BlogPage() {
+  // 并行获取置顶文章和所有文章
+  const [pinnedArticles, allArticles] = await Promise.all([getPinnedArticles(), getAllArticles()]);
+
+  // 获取第一个置顶文章（UI只显示一个置顶）
+  const pinnedArticle = pinnedArticles[0];
+
+  // 从所有文章中过滤掉已显示的置顶文章
+  const regularArticles = allArticles.filter(
+    (article) => !pinnedArticle || article.id !== pinnedArticle.id,
+  );
+  console.log(pinnedArticle, regularArticles);
   return (
     <>
       <Header />
 
       <div className="min-w-0 w-full max-w-5xl py-8 md:mx-auto px-6">
         {/* 置顶博客 - 横向布局 */}
-        <div className="mb-16">
-          <ArticleCardHorizontal
-            render={<a href="/blog/how-claudes-memory-and-mcp-work" />}
-            className="mb-8"
-            coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
-            title="Generate MCP servers from your docs"
-            description="Enable AI apps to search, retrieve, and action your APIs & docs instantly."
-            author={{
-              name: 'Emma Adler',
-              avatar:
-                'https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png',
-            }}
-            publishDate="June 24, 2025"
-            readTime="3 min read"
-          />
-        </div>
+        {pinnedArticle && (
+          <div className="mb-16">
+            <ArticleCardHorizontal
+              render={<a href={`/blog/${pinnedArticle.slug}`} />}
+              className="mb-8"
+              coverImage={`${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${pinnedArticle.coverImage.s3Key}`}
+              title={pinnedArticle.title}
+              description={
+                pinnedArticle.metadata.find((item) => item.fieldName === 'Summary')?.value ?? ''
+              }
+              authors={pinnedArticle.authors}
+              publishDate={new Date(pinnedArticle.publishedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+              readTime={`${pinnedArticle.readingTime} min read`}
+            />
+          </div>
+        )}
 
         {/* 搜索和分类区域 */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
@@ -72,83 +152,21 @@ export default function BlogPage() {
 
         {/* 博客文章网格 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <ArticleCard
-            render={<a href="/blog/replit-documentation" />}
-            coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
-            title="Behind Replit's Documentation Transformation"
-            description="Overhauling docs, vibe documenting, and scaling with automations."
-            author={{
-              name: 'Tiffany Chen',
-              avatar:
-                'https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png',
-            }}
-            publishDate="June 27, 2025"
-          />
-
-          <ArticleCard
-            render={<a href="/blog/claude-memory-mcp" />}
-            coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/685dc3b3997b6a1821d54961_BLOG-3.jpg"
-            title="How Claude's memory and MCP work (and when to use each)"
-            description="How memory vs MCP works, when to use them, and how to structure docs for better..."
-            author={{
-              name: 'Emma Adler',
-              avatar:
-                'https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png',
-            }}
-            publishDate="June 24, 2025"
-          />
-
-          <ArticleCard
-            render={<a href="/blog/founder-advice" />}
-            coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
-            title="It's not a race"
-            description="The best advice I've received as a founder."
-            author={{
-              name: 'Han Wang',
-              avatar:
-                'https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png',
-            }}
-            publishDate="June 4, 2025"
-          />
-
-          <ArticleCard
-            render={<a href="/blog/windsurf-docs" />}
-            coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
-            title="How Windsurf Writes Docs"
-            description="Creating comprehensive documentation for AI-powered development tools."
-            author={{
-              name: 'Robert Hou',
-              avatar:
-                'https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png',
-            }}
-            publishDate="June 20, 2025"
-          />
-
-          <ArticleCard
-            render={<a href="/blog/geo-optimization" />}
-            coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
-            title="How to optimize docs for GEO"
-            description="Strategies for global content optimization and localization."
-            author={{
-              name: 'MDXify Team',
-              avatar:
-                'https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png',
-            }}
-            publishDate="June 18, 2025"
-          />
-
-          <ArticleCard
-            render={<a href="/blog/anaconda-docs" />}
-            coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
-            title="How Anaconda Writes Docs"
-            description="Best practices for technical documentation in data science."
-            author={{
-              name: 'Joan Englander',
-              avatar:
-                'https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png',
-            }}
-            publishDate="June 15, 2025"
-          />
+          {regularArticles.map((article) => (
+            <ArticleCard
+              key={article.id}
+              render={<a href={`/blog/${article.slug}`} />}
+              coverImage={`${process.env.NEXT_PUBLIC_CDN_ENDPOINT}${article.coverImage.s3Key}`}
+              title={article.title}
+              description={article.description}
+              authors={article.authors}
+              publishDate={new Date(pinnedArticle.publishedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            />
+          ))}
         </div>
       </div>
 

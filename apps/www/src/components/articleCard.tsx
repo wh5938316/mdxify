@@ -10,10 +10,10 @@ type ArticleCardProps = {
   coverImage: string;
   title: string;
   description: string;
-  author: {
+  authors: {
     name: string;
     avatar: string;
-  };
+  }[];
   publishDate: string;
 } & Omit<React.ComponentProps<'div'>, 'children'> &
   Omit<useRender.ComponentProps<'div'>, 'children'>;
@@ -25,12 +25,15 @@ export default function ArticleCard(props: ArticleCardProps) {
     coverImage,
     title,
     description,
-    author,
+    authors,
     publishDate,
     ...restProps
   } = props;
 
   const content = useMemo(() => {
+    // 获取第一个作者作为主要作者
+    const primaryAuthor = authors[0];
+
     return (
       <>
         <div className="aspect-[16/9] overflow-hidden">
@@ -49,12 +52,16 @@ export default function ArticleCard(props: ArticleCardProps) {
           </p>
           <div className="flex items-center gap-3">
             <img
-              src={author.avatar}
-              alt={author.name}
+              src={primaryAuthor.avatar}
+              alt={primaryAuthor.name}
               className="w-8 h-8 rounded-full object-cover"
             />
             <div className="flex items-center text-sm text-gray-500 gap-2">
-              <span className="font-medium text-gray-700">{author.name}</span>
+              <span className="font-medium text-gray-700">
+                {authors.length === 1
+                  ? primaryAuthor.name
+                  : `${primaryAuthor.name}${authors.length > 2 ? ' et al.' : ` & ${authors[1].name}`}`}
+              </span>
               <span>•</span>
               <span>{publishDate}</span>
             </div>
@@ -62,7 +69,7 @@ export default function ArticleCard(props: ArticleCardProps) {
         </div>
       </>
     );
-  }, []);
+  }, [coverImage, title, description, authors, publishDate]);
 
   const element = useRender({
     render,
@@ -88,11 +95,11 @@ type ArticleCardHorizontalProps = {
   coverImage: string;
   title: string;
   description: string;
-  author: {
+  authors: {
     name: string;
     avatar: string;
-    role?: string;
-  };
+    jobTitle?: string;
+  }[];
   publishDate: string;
   readTime?: string;
 } & Omit<React.ComponentProps<'div'>, 'children'> &
@@ -105,13 +112,16 @@ export function ArticleCardHorizontal(props: ArticleCardHorizontalProps) {
     coverImage,
     title,
     description,
-    author,
+    authors,
     publishDate,
     readTime,
     ...restProps
   } = props;
 
   const content = useMemo(() => {
+    // 获取第一个作者作为主要作者
+    const primaryAuthor = authors[0];
+
     return (
       <>
         {/* 左侧封面图片 */}
@@ -149,19 +159,25 @@ export function ArticleCardHorizontal(props: ArticleCardHorizontalProps) {
           {/* 底部：作者信息 */}
           <div className="flex items-center gap-4">
             <img
-              src={author.avatar}
-              alt={author.name}
+              src={`${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${primaryAuthor.avatar}`}
+              alt={primaryAuthor.name}
               className="w-12 h-12 rounded-full object-cover"
             />
             <div>
-              <div className="font-semibold text-primary text-base">{author.name}</div>
-              {author.role && <div className="text-muted-foreground text-sm">{author.role}</div>}
+              <div className="font-semibold text-primary text-base">
+                {authors.length === 1
+                  ? primaryAuthor.name
+                  : `${primaryAuthor.name}${authors.length > 2 ? ' et al.' : ` & ${authors[1].name}`}`}
+              </div>
+              {primaryAuthor.jobTitle && (
+                <div className="text-muted-foreground text-sm">{primaryAuthor.jobTitle}</div>
+              )}
             </div>
           </div>
         </div>
       </>
     );
-  }, [coverImage, title, description, author, publishDate, readTime]);
+  }, [coverImage, title, description, authors, publishDate, readTime]);
 
   const element = useRender({
     render,
@@ -191,26 +207,26 @@ export function ArticleCardHorizontal(props: ArticleCardHorizontalProps) {
   coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
   title="Generate MCP servers from your docs"
   description="Enable AI apps to search, retrieve, and action your APIs & docs instantly."
-  author={{
+  author={[{
     name: "Emma Adler",
     avatar: "https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png"
-  }}
+  }]}
   publishDate="June 24, 2025"
 />
 
 横向版本:
 <ArticleCardHorizontal
-  render={<a href="/blog/introducing-ai-assistant" />}
-  className="mb-8"
-  coverImage="https://example.com/cover-image.jpg"
-  title="Introducing AI Assistant: Turning docs into your product expert"
-  description="An agentic, conversational assistant that delivers instant answers."
-  author={{
-    name: "Han Wang",
-    avatar: "https://example.com/avatar.jpg",
-    role: "Co-founder"
-  }}
-  publishDate="June 23, 2025"
-  readTime="2 min read"
+  render={<a href="/blog/how-claudes-memory-and-mcp-work" />}
+  className='col-span-1'
+  coverImage="https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67c8f2fe9738ee83e9414b90_Twitter%20post%20-%2087-p-800.png"
+  title="Generate MCP servers from your docs"
+  description="Enable AI apps to search, retrieve, and action your APIs & docs instantly."
+  author={[{
+    name: "Emma Adler",
+    avatar: "https://cdn.prod.website-files.com/66f29fc1a009998749da917b/67e194a8a146973f04f9e8ca_Screenshot%202025-03-24%20at%2010.21.28%E2%80%AFAM.png",
+    role: "Product Manager"
+  }]}
+  publishDate="June 24, 2025"
+  readTime="3 min read"
 />
 */

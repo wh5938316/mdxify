@@ -139,6 +139,9 @@ async function getArticleDetail(slug: string): Promise<ArticleDetail | null> {
         headers: {
           'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
         },
+        next: {
+          revalidate: 120,
+        },
       },
     );
 
@@ -167,6 +170,9 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
     {
       headers: {
         'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
+      },
+      next: {
+        revalidate: 120,
       },
     },
   );

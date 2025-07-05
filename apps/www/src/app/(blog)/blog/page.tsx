@@ -1,11 +1,8 @@
 import { Suspense } from 'react';
 
 import { AllArticlesSection, PinnedArticleSection } from './components/articleList';
-import ArticleCard, { ArticleCardHorizontal } from '@/components/articleCard';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/head';
-
-export const revalidate = 60;
 
 export default function BlogPage() {
   return (

@@ -163,7 +163,7 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
 
   // 获取文章内容
   const data = await fetch(
-    `${process.env.MDXIFY_API_URL}/api/v1/categories/blog/articles/${slugString}/content`,
+    `${process.env.MDXIFY_API_URL}/api/v1/categories/blog/${slugString}/content`,
     {
       headers: {
         'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,

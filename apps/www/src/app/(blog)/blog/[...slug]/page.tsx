@@ -1,4 +1,4 @@
-import { compileMDX, parseFrontmatter } from '@fumadocs/mdx-remote';
+import { compileMDX } from '@fumadocs/mdx-remote';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -8,6 +8,7 @@ import { getMDXComponents } from '@mdxify/mdx-components';
 import ArticleCard from '@/components/articleCard';
 import Footer from '@/components/layout/footer';
 import Header from '@/components/layout/head';
+import { type ArticleDetail, getArticleContent, getArticleDetail } from '@/lib/mdxify-sdk';
 
 export interface Frontmatter {
   title: string;
@@ -23,137 +24,7 @@ export interface Frontmatter {
   }[];
 }
 
-interface RelatedArticle {
-  id: string;
-  title: string;
-  slug: string;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  publishedAt: string;
-  readingTime: number;
-  coverImage: {
-    s3Key: string;
-  };
-  reason: string;
-  authors: {
-    id: string;
-    name: string;
-    slug: string;
-    bio: string | null;
-    avatar: string;
-    jobTitle: string;
-    order: number;
-  }[];
-  tags: {
-    id: string;
-    name: string;
-    slug: string;
-    color: string | null;
-    description: string | null;
-  }[];
-}
-
-interface ArticleDetail {
-  id: string;
-  title: string;
-  slug: string;
-  status: string;
-  publishedAt: string;
-  seoTitle: string | null;
-  seoDescription: string | null;
-  seoKeywords: string | null;
-  readingTime: number;
-  viewCount: number;
-  createdAt: string;
-  updatedAt: string;
-  category: {
-    id: string;
-    key: string;
-    name: string;
-    description: string;
-    icon: string;
-    color: string;
-    domainName: string;
-    slugPrefix: string;
-  };
-  series: any;
-  tags: {
-    id: string;
-    name: string;
-    slug: string;
-    color: string | null;
-    description: string | null;
-  }[];
-  metadata: {
-    id: string;
-    schemaId: string;
-    fieldName: string;
-    fieldType: string;
-    isRequired: boolean;
-    description: string;
-    enumOptions: any;
-    value: string;
-  }[];
-  authors: {
-    id: string;
-    name: string;
-    slug: string;
-    bio: string | null;
-    avatar: string;
-    jobTitle: string;
-    github: string | null;
-    twitter: string | null;
-    linkedin: string | null;
-    facebook: string | null;
-    instagram: string | null;
-    youtube: string | null;
-    tiktok: string | null;
-    blueSky: string | null;
-    mastodon: string | null;
-    website: string | null;
-    order: number;
-  }[];
-  coverImage: {
-    id: string;
-    fileName: string;
-    s3Key: string;
-    alt: string | null;
-    caption: string | null;
-    width: number;
-    height: number;
-    fileSize: number;
-    mimeType: string;
-  };
-  relatedArticles: {
-    type: string;
-    articles: RelatedArticle[];
-  };
-}
-
 export const revalidate = 3600;
-
-async function getArticleDetail(slug: string): Promise<ArticleDetail | null> {
-  try {
-    const response = await fetch(`${process.env.MDXIFY_API_URL}/api/v1/categories/blog/${slug}`, {
-      headers: {
-        'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
-      },
-      next: {
-        revalidate: 120,
-      },
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching article detail:', error);
-    return null;
-  }
-}
 
 export default async function Page(props: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await props.params;
@@ -163,23 +34,11 @@ export default async function Page(props: { params: Promise<{ slug: string[] }> 
   const articleDetail = await getArticleDetail(slugString);
 
   // 获取文章内容
-  const data = await fetch(
-    `${process.env.MDXIFY_API_URL}/api/v1/categories/blog/${slugString}/content`,
-    {
-      headers: {
-        'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
-      },
-      next: {
-        revalidate: 120,
-      },
-    },
-  );
+  const content = await getArticleContent(slugString);
 
-  if (!data.ok) {
+  if (!content) {
     notFound();
   }
-
-  let content = await data.text();
 
   const {
     frontmatter,

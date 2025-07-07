@@ -1,91 +1,21 @@
 import Link from 'next/link';
 
 import ArticleCard, { ArticleCardHorizontal } from '@/components/articleCard';
-
-interface Article {
-  id: string;
-  title: string;
-  description: string;
-  coverImage: {
-    s3Key: string;
-  };
-  authors: {
-    name: string;
-    avatar: string;
-    jobTitle?: string;
-  }[];
-  publishedAt: string;
-  readingTime?: string;
-  slug: string;
-  isPinned?: boolean;
-  metadata: {
-    fieldName: string;
-    value: string;
-  }[];
-}
-
-async function getPinnedArticles(): Promise<Article[]> {
-  try {
-    const response = await fetch(
-      `${process.env.MDXIFY_API_URL}/api/v1/categories/blog?isPinned=true`,
-      {
-        headers: {
-          'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
-        },
-        // cache: 'no-store',
-        next: { revalidate: 60 },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch pinned articles: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching pinned articles:', error);
-    return [];
-  }
-}
-
-async function getAllArticles(): Promise<Article[]> {
-  try {
-    const response = await fetch(`${process.env.MDXIFY_API_URL}/api/v1/categories/blog`, {
-      headers: {
-        'x-api-key': process.env.MDXIFY_ACCESS_TOKEN!,
-      },
-      // cache: 'no-store',
-      next: { revalidate: 60 },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch articles: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching articles:', error);
-    return [];
-  }
-}
+import { type Article, getFirstPinnedArticle, getRegularArticles } from '@/lib/mdxify-sdk';
 
 // 置顶文章组件
 export const PinnedArticleSection = async () => {
-  const pinnedArticles = await getPinnedArticles();
-  const pinnedArticle = pinnedArticles[0];
-
-  if (pinnedArticle && pinnedArticle.authors) {
-    pinnedArticle.authors = pinnedArticle.authors.map((author) => ({
-      ...author,
-      avatar: `${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${author.avatar}`,
-    }));
-  }
+  const pinnedArticle = await getFirstPinnedArticle({ revalidate: 60 });
 
   if (!pinnedArticle) {
     return null;
   }
+
+  // 处理作者头像URL
+  const processedAuthors = pinnedArticle.authors.map((author) => ({
+    ...author,
+    avatar: `${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${author.avatar}`,
+  }));
 
   return (
     <div className="mb-16">
@@ -97,7 +27,7 @@ export const PinnedArticleSection = async () => {
         description={
           pinnedArticle.metadata.find((item) => item.fieldName === 'Summary')?.value ?? ''
         }
-        authors={pinnedArticle.authors}
+        authors={processedAuthors}
         publishDate={new Date(pinnedArticle.publishedAt).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
@@ -111,23 +41,21 @@ export const PinnedArticleSection = async () => {
 
 // 所有文章组件
 export const AllArticlesSection = async () => {
-  const [pinnedArticles, allArticles] = await Promise.all([getPinnedArticles(), getAllArticles()]);
+  const regularArticles = await getRegularArticles({ revalidate: 60 });
 
-  const pinnedArticle = pinnedArticles[0];
-  const regularArticles = allArticles
-    .filter((article) => !pinnedArticle || article.id !== pinnedArticle.id)
-    .map((article) => ({
-      ...article,
-      coverImage: `${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${article.coverImage.s3Key}`,
-      authors: article.authors.map((author) => ({
-        ...author,
-        avatar: `${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${author.avatar}`,
-      })),
-    }));
+  const processedArticles = regularArticles.map((article) => ({
+    ...article,
+    coverImage: `${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${article.coverImage.s3Key}`,
+    authors: article.authors.map((author) => ({
+      ...author,
+      avatar: `${process.env.NEXT_PUBLIC_CDN_ENDPOINT}/${author.avatar}`,
+    })),
+    description: article.metadata.find((item) => item.fieldName === 'Summary')?.value ?? '',
+  }));
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {regularArticles.map((article) => (
+      {processedArticles.map((article) => (
         <ArticleCard
           key={article.id}
           render={<Link href={`/blog/${article.slug}`} />}

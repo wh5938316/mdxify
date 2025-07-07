@@ -11,7 +11,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prettier-fix": "prettier --write packages apps",
     "build-type": "pnpm build-master-type && pnpm build-public-type",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "publish-all": "./scripts/publish.sh",
+    "version-bump": "pnpm changeset version",
+    "changeset": "changeset"
   },
   "author": "@horatio",
   "license": "private",
@@ -27,6 +30,7 @@
     ]
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
     "@mdxify/eslint-config": "workspace:*",
     "@mdxify/typescript-config": "workspace:*",
     "concurrently": "^9.1.2",
